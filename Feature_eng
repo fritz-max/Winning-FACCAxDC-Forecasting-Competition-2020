@@ -44,6 +44,24 @@ def weighted_avg_ds(data, weight_col=False, weight_inplace=False,
                     continue
     return df
             
-                
-                
-        
+
+ ####### Clouds binary func cutting at 0.1 and 0.9 #######
+
+ def bin(x):
+    if x < 0.1:
+        return 0
+    elif x > 0.9:
+        return 1 
+def binary_tcc(data):
+    df = data
+    for col in data.columns:
+        if col.endswith("tcc"):
+            df[col] = df[col].apply(bin)
+    return df
+############################################################
+
+##### Siesta func ####
+def siesta(hour_column,hours=[14,15,16]):
+    siesta = hour_column[lambda x: 1 if x in hours else 0]
+    return siesta
+
