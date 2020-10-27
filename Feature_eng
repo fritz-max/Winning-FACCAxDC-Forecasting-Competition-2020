@@ -1,0 +1,49 @@
+
+
+def weighted_avg_ds(data, weight_col=False, weight_inplace=False,
+                    weights_dict={"Madrid":1/6,"Barcelona":1/6,"Valencia":1/6,"Seville":1/6,"Zaragoza":1/6,"Malaga":1/6 }):
+    
+    """This func will transfrom the full dataset to any dimension we would like
+    Weights for each city  need to be specified in the weights_dict, if weights are equal (1/6), it will just average everything out normally
+    If weight_col =  True, it will add 6 separate columns with choosen weights
+    If weight_inplace = True it will multiply the weights by all the features for each city separately, but not for the target var 
+    """
+    col_ends = ["_d2m", "_t2m","_i10fg", "_sp", "_tcc", "_tp"]
+    
+    df = pd.DataFrame()
+    if 'VolumeMWh' in data.columns:
+        df['VolumeMWh'] = data['VolumeMWh']
+    if weight_inplace == False:
+    
+        if weight_col == False:
+
+            for col in col_ends:
+                a = 0 
+
+                for city in weights_dict.keys():
+
+                    a+=1
+                    if a == 1:
+
+                        df[col[1:]] = data[city+col]*(weights_dict[city])
+                        continue
+                    colum = data[city+col]*weights_dict[city]
+                    df[col[1:]] = df[col[1:]]+colum
+                    
+        elif weight_col == True:
+            df = data
+            for city in weights_dict.keys():
+                df[city+"_weight"] = round(weights_dict[city],3)
+                
+    elif weight_inplace == True and weight_col==False:
+        
+         for city in weights_dict.keys():
+            for column in data.columns:
+                if column.startswith(city):
+                    df[column] = data[column]*weights_dict[city]
+                    continue
+    return df
+            
+                
+                
+        
