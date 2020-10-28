@@ -1,5 +1,6 @@
 import pandas as pd
-
+from datetime import date
+import holidays
 
 def add_hour_weekday_month(df):
     # Generate 'hour', 'weekday' and 'month' features
@@ -166,3 +167,16 @@ def bin_cloud_coverage(df):
         else:
             continue
 
+
+def holidays_spain(df):
+    spain_holidays = holidays.ES()
+    
+    for i,d in zip(range(len(df)),df.index.date):
+        position = df.index[i]
+        #date = position.date
+        #print(d)
+        if d in spain_holidays:
+            df.loc[position, 'holidays'] = 1
+            
+        else:
+            df.loc[position, 'holidays'] = 0
