@@ -96,3 +96,48 @@ def weighted_avg_ds(data, weight_col=False, weight_inplace=False,
 def siesta(hour_column,hours=[14,15,16]):
     siesta = hour_column[lambda x: 1 if x in hours else 0]
     return siesta
+
+
+### make time features func ####
+def make_time_features(data, series):
+    df = data.reset_index(drop=True)
+    
+    ### remove timestamp cols if they are still in data at this point anyhow ###
+    if "time" in df.columns:
+        df = df.drop("time")
+    if "ValueDateTimeUTC" in df.columns:
+        df = df.drop("ValueDateTimeUTC")
+    #convert series to datetimes
+    times = series.apply(lambda x: x.split('+')[0])
+    datetimes = pd.DatetimeIndex(times)
+    
+    hours = datetimes.hour.values
+    day = datetimes.dayofweek.values
+    months = datetimes.month.values
+    
+    hour = pd.Series(hours, name='hours')
+    dayofw = pd.Series(day, name='dayofw')
+    month = pd.Series(months, name='months')
+    ### printing to check for NANs, if there are any
+    ### then theres an error
+    print(hour[:5])
+    df["hour"] = hour
+    df["dayofw"] = dayofw
+    df["months"] = month
+    return df
+
+ #- average not weighted 6 x N Done
+train_X_avg = weighted_avg_ds(X_train, weight_col=False, weight_inplace=False, weights_dict={"Madrid":1/6,"Barcelona":1/6,"Valencia":1/6,"Seville":1/6,"Zaragoza":1/6,"Malaga":1/6 })
+train_X_avg = make_time_features(train_X_avg, train_X_avg.index.to_series())
+
+#- average weighted 6 x N Done
+train_avg_X_weighted  = weighted_avg_ds(X_train, weight_col=False, weight_inplace=False, weights_dict={"Madrid":1.5/6,"Barcelona":1.5/6,"Valencia":1/6,"Seville":1/6,"Zaragoza":0.5/6,"Malaga":0.5/6 })
+train_avg_X_weighted = make_time_features(train_avg_X_weighted, train_avg_X_weighted.index.to_series())
+
+# - 6x6xN weighted  
+train_X_weighted_std = weighted_avg_ds(X_train, weight_col=False, weight_inplace=True, weights_dict={"Madrid":1.5/6,"Barcelona":1.5/6,"Valencia":1/6,"Seville":1/6,"Zaragoza":0.5/6,"Malaga":0.5/6 })
+train_X_weighted_std = make_time_features(train_X_weighted_std, train_X_weighted_std.index.to_series())
+ 
+ #- 6x7xX weight as a separate col for each city 
+train_X_weighted_col = weighted_avg_ds(X_train, weight_col=True, weight_inplace=False, weights_dict={"Madrid":1/6,"Barcelona":1/6,"Valencia":1/6,"Seville":1/6,"Zaragoza":1/6,"Malaga":1/6 })
+train_X_weighted_col = make_time_features(train_X_weighted_col, train_X_weighted_col.index.to_series())
