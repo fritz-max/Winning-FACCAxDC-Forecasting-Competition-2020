@@ -1,3 +1,5 @@
+from datetime import date
+import holidays
 import pandas as pd
 from tqdm import tqdm
 
@@ -155,3 +157,41 @@ def normalize(df):
         max, min = df[type].max().max(), df[type].min().min()
         def curried_norm(val): return _norm(val, max, min)
         df[type] = df[type].apply(curried_norm)
+
+
+def siesta(df):
+    for i in range(len(df)):
+        position = df.index[i]
+        hour = position.hour
+        if hour in [14, 15, 16]:
+            df.loc[position, 'siesta'] = 1
+
+        else:
+            df.loc[position, 'siesta'] = 0
+
+
+def bin_cloud_coverage(df):
+    def bin(x):
+        if x > 0.8:
+            return 1
+        else:
+            return 0
+    for col in df.columns:
+        if col.endswith("tcc"):
+            df[col+"_binary"] = df[col].apply(bin)
+        else:
+            continue
+
+
+def holidays_spain(df):
+    spain_holidays = holidays.ES()
+
+    for i, d in zip(range(len(df)), df.index.date):
+        position = df.index[i]
+        #date = position.date
+        # print(d)
+        if d in spain_holidays:
+            df.loc[position, 'holidays'] = 1
+
+        else:
+            df.loc[position, 'holidays'] = 0
