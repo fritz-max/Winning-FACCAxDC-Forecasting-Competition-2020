@@ -93,10 +93,11 @@ def weighted_avg_ds(data, weight_col=False, weight_inplace=False,
     return df.set_index("time")
 
 ##### Siesta func ####
-def siesta(hour_column,hours=[14,15,16]):
-    siesta = hour_column[lambda x: 1 if x in hours else 0]
-    return siesta
-
+def siesta(h,hours=[14,15,16]):
+    if h in hours:
+        return 1
+    else:
+        return 0 
 
 ### make time features func ####
 def make_time_features(data, series):
@@ -126,18 +127,32 @@ def make_time_features(data, series):
     df["months"] = month
     return df
 
+
+
  #- average not weighted 6 x N Done
 train_X_avg = weighted_avg_ds(X_train, weight_col=False, weight_inplace=False, weights_dict={"Madrid":1/6,"Barcelona":1/6,"Valencia":1/6,"Seville":1/6,"Zaragoza":1/6,"Malaga":1/6 })
+#transforming index to time features
 train_X_avg = make_time_features(train_X_avg, train_X_avg.index.to_series())
+# add siesta 
+train_X_avg["siesta"] = train_X_avg.hour.apply(siesta)
 
 #- average weighted 6 x N Done
 train_avg_X_weighted  = weighted_avg_ds(X_train, weight_col=False, weight_inplace=False, weights_dict={"Madrid":1.5/6,"Barcelona":1.5/6,"Valencia":1/6,"Seville":1/6,"Zaragoza":0.5/6,"Malaga":0.5/6 })
+#transforming index to time features
 train_avg_X_weighted = make_time_features(train_avg_X_weighted, train_avg_X_weighted.index.to_series())
+# add siesta 
+train_avg_X_weighted["siesta"] = train_avg_X_weighted.hour.apply(siesta)
 
 # - 6x6xN weighted  
 train_X_weighted_std = weighted_avg_ds(X_train, weight_col=False, weight_inplace=True, weights_dict={"Madrid":1.5/6,"Barcelona":1.5/6,"Valencia":1/6,"Seville":1/6,"Zaragoza":0.5/6,"Malaga":0.5/6 })
+# transforming index to time features
 train_X_weighted_std = make_time_features(train_X_weighted_std, train_X_weighted_std.index.to_series())
- 
+ # add siesta 
+train_X_weighted_std["siesta"] = train_X_weighted_std.hour.apply(siesta)
+
  #- 6x7xX weight as a separate col for each city 
 train_X_weighted_col = weighted_avg_ds(X_train, weight_col=True, weight_inplace=False, weights_dict={"Madrid":1/6,"Barcelona":1/6,"Valencia":1/6,"Seville":1/6,"Zaragoza":1/6,"Malaga":1/6 })
+# transforming index to time features
 train_X_weighted_col = make_time_features(train_X_weighted_col, train_X_weighted_col.index.to_series())
+# add siesta 
+train_X_weighted_col["siesta"] = train_X_weighted_col.hour.apply(siesta)
