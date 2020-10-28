@@ -1,9 +1,24 @@
+from datetime import date
+import holidays
 import pandas as pd
+from tqdm import tqdm
+
+
+def _range(N, desc=''):
+    return tqdm(range(N), desc=desc)
+
+
+def add_time(df):
+    df['time'] = pd.to_datetime(df['ValueDateTimeUTC'],
+                                utc=True, infer_datetime_format=True)
+    # df = df.drop(['ValueDateTimeUTC'], axis=1)
+    # df.set_index('time', inplace=True)
 
 
 def add_hour_weekday_month(df):
     # Generate 'hour', 'weekday' and 'month' features
-    for i in range(len(df)):
+    df.set_index('time', inplace=True)
+    for i in _range(len(df), desc='add_hour_weekday_month'):
         position = df.index[i]
         hour = position.hour
         weekday = position.weekday()
@@ -11,12 +26,14 @@ def add_hour_weekday_month(df):
         df.loc[position, 'hour'] = hour
         df.loc[position, 'weekday'] = weekday
         df.loc[position, 'month'] = month
+    df.reset_index(level=0, inplace=True)
 
 
 def add_weekend(df):
     # assert df.weekday, "run add_hour_weekday_month before running this"
     # Generate 'weekend' feature
-    for i in range(len(df)):
+    df.set_index('time', inplace=True)
+    for i in _range(len(df), desc='add_weekend'):
         position = df.index[i]
         weekday = position.weekday()
         if (weekday == 6):
@@ -25,11 +42,13 @@ def add_weekend(df):
             df.loc[position, 'weekday'] = 1
         else:
             df.loc[position, 'weekday'] = 0
+    df.reset_index(level=0, inplace=True)
 
 
 def add_business_hour(df):
     # Generate 'business hour' feature
-    for i in range(len(df)):
+    df.set_index('time', inplace=True)
+    for i in _range(len(df), desc='add_business_hour'):
         position = df.index[i]
         hour = position.hour
         if ((hour > 8 and hour < 14) or (hour > 16 and hour < 21)):
@@ -38,13 +57,7 @@ def add_business_hour(df):
             df.loc[position, 'business hour'] = 1
         else:
             df.loc[position, 'business hour'] = 0
-
-
-def add_time(df):
-    df['time'] = pd.to_datetime(df['ValueDateTimeUTC'],
-                                utc=True, infer_datetime_format=True)
-    # df = df.drop(['ValueDateTimeUTC'], axis=1)
-    df.set_index('time', inplace=True)
+    df.reset_index(level=0, inplace=True)
 
 
 def add_avgs(df):
@@ -75,7 +88,7 @@ def add_avgs(df):
     df['tps'] = df[tps].mean(axis=1).round(2)
 
 
-def add_city_weight(df):
+def add_city_weight(df, as_features=False):
     # Calculate the weight of every city
     total_pop = 6155116 + 5179243 + 2541000 + 1950000 + 783763 + 600000
 
@@ -87,31 +100,32 @@ def add_city_weight(df):
     # not very accurate, only had one from 2018, which was 571026
     weight_Malaga = 600000 / total_pop
 
-    # df['Madrid_w'] = weight_Madrid
-    # df['Barcelona_w'] = weight_Barcelona
-    # df['Valencia_w'] = weight_Valencia
-    # df['Zaragoza_w'] = weight_Zaragoza
-    # df['Malaga_w'] = weight_Malaga
+    if as_features:
+        df['Madrid_w'] = weight_Madrid
+        df['Barcelona_w'] = weight_Barcelona
+        df['Valencia_w'] = weight_Valencia
+        df['Zaragoza_w'] = weight_Zaragoza
+        df['Malaga_w'] = weight_Malaga
+    else:
+        Madrid = ['Madrid_d2m', 'Madrid_t2m', 'Madrid_i10fg',
+                  'Madrid_sp', 'Madrid_tcc', 'Madrid_tp']
+        Barcelona = ['Barcelona_d2m', 'Barcelona_t2m', 'Barcelona_i10fg',
+                     'Barcelona_sp', 'Barcelona_tcc', 'Barcelona_tp']
+        Valencia = ['Valencia_d2m', 'Valencia_t2m', 'Valencia_i10fg',
+                    'Valencia_sp', 'Valencia_tcc', 'Valencia_tp']
+        Seville = ['Seville_d2m', 'Seville_t2m', 'Seville_i10fg',
+                   'Seville_sp', 'Seville_tcc', 'Seville_tp']
+        Zaragoza = ['Zaragoza_d2m', 'Zaragoza_t2m', 'Zaragoza_i10fg',
+                    'Zaragoza_sp', 'Zaragoza_tcc', 'Zaragoza_tp']
+        Malaga = ['Malaga_d2m', 'Malaga_t2m', 'Malaga_i10fg',
+                  'Malaga_sp', 'Malaga_tcc', 'Malaga_tp']
 
-    Madrid = ['Madrid_d2m', 'Madrid_t2m', 'Madrid_i10fg',
-              'Madrid_sp', 'Madrid_tcc', 'Madrid_tp']
-    Barcelona = ['Barcelona_d2m', 'Barcelona_t2m', 'Barcelona_i10fg',
-                 'Barcelona_sp', 'Barcelona_tcc', 'Barcelona_tp']
-    Valencia = ['Valencia_d2m', 'Valencia_t2m', 'Valencia_i10fg',
-                'Valencia_sp', 'Valencia_tcc', 'Valencia_tp']
-    Seville = ['Seville_d2m', 'Seville_t2m', 'Seville_i10fg',
-               'Seville_sp', 'Seville_tcc', 'Seville_tp']
-    Zaragoza = ['Zaragoza_d2m', 'Zaragoza_t2m', 'Zaragoza_i10fg',
-                'Zaragoza_sp', 'Zaragoza_tcc', 'Zaragoza_tp']
-    Malaga = ['Malaga_d2m', 'Malaga_t2m', 'Malaga_i10fg',
-              'Malaga_sp', 'Malaga_tcc', 'Malaga_tp']
+        cities = [Madrid, Barcelona, Valencia, Seville, Zaragoza, Malaga]
+        weights = [weight_Madrid, weight_Barcelona, weight_Valencia,
+                   weight_Seville, weight_Zaragoza, weight_Malaga]
 
-    cities = [Madrid, Barcelona, Valencia, Seville, Zaragoza, Malaga]
-    weights = [weight_Madrid, weight_Barcelona, weight_Valencia,
-               weight_Seville, weight_Zaragoza, weight_Malaga]
-
-    for (w, c) in zip(weights, cities):
-        df[c] *= w
+        for (w, c) in zip(weights, cities):
+            df[c] *= w
 
 
 def _norm(value, max, min):
@@ -143,3 +157,41 @@ def normalize(df):
         max, min = df[type].max().max(), df[type].min().min()
         def curried_norm(val): return _norm(val, max, min)
         df[type] = df[type].apply(curried_norm)
+
+
+def siesta(df):
+    for i in range(len(df)):
+        position = df.index[i]
+        hour = position.hour
+        if hour in [14, 15, 16]:
+            df.loc[position, 'siesta'] = 1
+
+        else:
+            df.loc[position, 'siesta'] = 0
+
+
+def bin_cloud_coverage(df):
+    def bin(x):
+        if x > 0.8:
+            return 1
+        else:
+            return 0
+    for col in df.columns:
+        if col.endswith("tcc"):
+            df[col+"_binary"] = df[col].apply(bin)
+        else:
+            continue
+
+
+def holidays_spain(df):
+    spain_holidays = holidays.ES()
+
+    for i, d in zip(range(len(df)), df.index.date):
+        position = df.index[i]
+        #date = position.date
+        # print(d)
+        if d in spain_holidays:
+            df.loc[position, 'holidays'] = 1
+
+        else:
+            df.loc[position, 'holidays'] = 0

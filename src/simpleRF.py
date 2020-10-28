@@ -17,21 +17,39 @@ Y_TRAIN_PATH = '../Case_material/train/y_train.csv'
 # Better data
 # MSE = 1653546.5784528889
 # R2 = 0.9209651099261675
-X_TRAIN_PATH = 'X_final.csv'
-Y_TRAIN_PATH = 'y_train.csv'
+# X_TRAIN_PATH = 'X_final.csv'
+# Y_TRAIN_PATH = 'y_train.csv'
 
 
 X = pd.read_csv(X_TRAIN_PATH)
 y = pd.read_csv(Y_TRAIN_PATH)
 
-# X.drop(columns=['time', 'ValueDateTimeUTC'], inplace=True)
-X.drop(columns=['ValueDateTimeUTC'], inplace=True)
+add_time(X)
+add_hour_weekday_month(X)
+add_weekend(X)
+add_business_hour(X)
+normalize(X)
+add_city_weight(X, as_features=True)
+
+cols2drop = ['time', 'ValueDateTimeUTC']
+# cols2drop = ['time', 'ValueDateTimeUTC', 'Madrid_d2m', 'Madrid_t2m', 'Madrid_i10fg',
+#              'Madrid_sp', 'Madrid_tcc', 'Madrid_tp', 'Barcelona_d2m',
+#              'Barcelona_t2m', 'Barcelona_i10fg', 'Barcelona_sp', 'Barcelona_tcc',
+#              'Barcelona_tp', 'Valencia_d2m', 'Valencia_t2m', 'Valencia_i10fg',
+#              'Valencia_sp', 'Valencia_tcc', 'Valencia_tp', 'Seville_d2m',
+#              'Seville_t2m', 'Seville_i10fg', 'Seville_sp', 'Seville_tcc',
+#              'Seville_tp', 'Zaragoza_d2m', 'Zaragoza_t2m', 'Zaragoza_i10fg',
+#              'Zaragoza_sp', 'Zaragoza_tcc', 'Zaragoza_tp', 'Malaga_d2m',
+#              'Malaga_t2m', 'Malaga_i10fg', 'Malaga_sp', 'Malaga_tcc', 'Malaga_tp']
+
+X.drop(columns=cols2drop, inplace=True)
+# X.drop(columns=['ValueDateTimeUTC'], inplace=True)
 y.drop(columns=['ValueDateTimeUTC'], inplace=True)
 # print(X.head(), y.head())
 
 # Splitting data
 X_train, X_test, y_train, y_test = train_test_split(
-    X, y, test_size=0.33, random_state=42)
+    X, y, test_size=0.10, random_state=42)
 
 
 # Instantiate model with 1000 decision trees
