@@ -43,16 +43,27 @@ add_holidays_spain(X)
 normalize(X)
 add_city_weight(X)
 
+cols2incl = [
+    "hour",
+    "dayofweek",
+    "dayofyear",
+    "Madrid_t2m",
+    "holidays",
+    "Malaga_t2m"
+]
 
-X.drop(columns=['ValueDateTimeUTC', 'time', 'date'], inplace=True)
+
+X = X[cols2incl]
+# X.drop(columns=['ValueDateTimeUTC', 'time', 'date'], inplace=True)
 y.drop(columns=['ValueDateTimeUTC'], inplace=True)
 
 
-xgb_model = xgb.XGBRegressor()
+xgb_model = xgb.XGBRegressor(n_jobs=-1)
 param_search = {
     'max_depth': randint(5, 20),
-    # 'min_child_weight': [0.5, 1],
-    'learning_rate': loguniform(1e-4, 1e0)
+    'min_child_weight': [0.5, 1, 2],
+    'learning_rate': loguniform(1e-4, 1e0),
+    'gamma': [0,2,4,6,8,10]
     # 'subsample': [1],
     # 'colsample_bytree': [1]
 }
