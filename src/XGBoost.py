@@ -13,20 +13,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
 
-
-def report(results, n_top=3):
-    # Utility function to report best scores
-    for i in range(1, n_top + 1):
-        candidates = np.flatnonzero(results['rank_test_score'] == i)
-        for candidate in candidates:
-            print("Model with rank: {0}".format(i))
-            print("Mean validation score: {0:.3f} (std: {1:.3f})"
-                  .format(results['mean_test_score'][candidate],
-                          results['std_test_score'][candidate]))
-            print("Parameters: {0}".format(results['params'][candidate]))
-            print("")
-
-
 X_TRAIN_PATH = '../Case_material/train/X_train.csv'
 Y_TRAIN_PATH = '../Case_material/train/y_train.csv'
 
@@ -40,22 +26,16 @@ add_weekend(X)
 add_business_hour(X)
 add_siesta(X)
 add_holidays_spain(X)
-normalize(X)
 add_city_weight(X)
-
+normalize(X)
 
 X.drop(columns=['ValueDateTimeUTC', 'time', 'date'], inplace=True)
 y.drop(columns=['ValueDateTimeUTC'], inplace=True)
 
-
 xgb_model = xgb.XGBRegressor()
 param_search = {
     'max_depth': randint(5, 20),
-    # 'min_child_weight': [0.5, 1],
-    'learning_rate': loguniform(1e-4, 1e0)
-    # 'subsample': [1],
-    # 'colsample_bytree': [1]
-}
+    'learning_rate': loguniform(1e-4, 1e0)}
 
 split_frac = 0.9
 X_train = X[:int(X.shape[0]*split_frac)]
@@ -63,13 +43,37 @@ X_test = X[int(X.shape[0]*split_frac):]
 y_train = y[:int(X.shape[0]*split_frac)]
 y_test = y[int(X.shape[0]*split_frac):]
 
-tscv = TimeSeriesSplit(n_splits=20)
-rsearch = RandomizedSearchCV(estimator=xgb_model, cv=tscv,
-                             param_distributions=param_search)
-rsearch.fit(X_train, y_train)
+n_estimators = 2000
+params = {
+    # Parameters that we are going to tune.
+    'learning_rate': 0.13872832647046318,
+    'max_depth': 7,
+    # Other parameters
+    'objective': 'reg:squarederror'
+}
+
+xgb_model = XGBRegressor(
+    **params,
+    n_estimators=n_estimators)
+
+split_frac = 0.9
+X_train = X[:int(X.shape[0]*split_frac)]
+X_test = X[int(X.shape[0]*split_frac):]
+y_train = y[:int(X.shape[0]*split_frac)]
+y_test = y[int(X.shape[0]*split_frac):]
+
+i = 1
+score = []
 
 
-test_preds = rsearch.predict(X_test)
+fit = xgb_model.fit(
+    X_train,
+    y_train,
+    eval_set=[(X_train, y_train), (X_test, y_test)],
+    early_stopping_rounds=25)
+
+
+test_preds = xgb_model.predict(X_test)
 
 print('MSE:', round(mean_squared_error(y_test.to_numpy(),
                                        test_preds.reshape((-1, 1))), 2))
@@ -79,5 +83,3 @@ mape = np.mean(np.abs((y_test.to_numpy() - test_preds.reshape((-1, 1))) /
                       np.abs(y_test.to_numpy())))
 print('Mean Absolute Percentage Error (MAPE):', round(mape * 100, 2))
 print('Accuracy:', round(100*(1 - mape), 2))
-
-report(rsearch.cv_results_)

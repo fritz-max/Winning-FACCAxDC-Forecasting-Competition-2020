@@ -30,26 +30,26 @@ def add_hour_dayofweek_month(df):
 
 
 def add_hour_batches(df):
-    df['hour3'] = ((df.dayofweek == 0) +
-                   (df.dayofweek == 1)+(df.dayofweek == 2))*1
-    df['hour3'] = ((df.dayofweek == 3) +
-                   (df.dayofweek == 4)+(df.dayofweek == 5))*2
-    df['hour3'] = ((df.dayofweek == 6) +
-                   (df.dayofweek == 7)+(df.dayofweek == 8))*3
-    df['hour3'] = ((df.dayofweek == 9)+(df.dayofweek == 10) +
+    df['hour3'] = ((df.dayofweek == 0) |
+                   (df.dayofweek == 1) | (df.dayofweek == 2))*1
+    df['hour3'] = ((df.dayofweek == 3) |
+                   (df.dayofweek == 4) | (df.dayofweek == 5))*2
+    df['hour3'] = ((df.dayofweek == 6) |
+                   (df.dayofweek == 7) | (df.dayofweek == 8))*3
+    df['hour3'] = ((df.dayofweek == 9) | (df.dayofweek == 10) |
                    (df.dayofweek == 11))*4
-    df['hour3'] = ((df.dayofweek == 12) +
-                   (df.dayofweek == 13)+(df.dayofweek == 14))*5
-    df['hour3'] = ((df.dayofweek == 15) +
-                   (df.dayofweek == 16)+(df.dayofweek == 17))*4
-    df['hour3'] = ((df.dayofweek == 18) +
-                   (df.dayofweek == 19)+(df.dayofweek == 20))*4
-    df['hour3'] = ((df.dayofweek == 21) +
-                   (df.dayofweek == 22)+(df.dayofweek == 23))*4
+    df['hour3'] = ((df.dayofweek == 12) |
+                   (df.dayofweek == 13) | (df.dayofweek == 14))*5
+    df['hour3'] = ((df.dayofweek == 15) |
+                   (df.dayofweek == 16) | (df.dayofweek == 17))*6
+    df['hour3'] = ((df.dayofweek == 18) |
+                   (df.dayofweek == 19) | (df.dayofweek == 20))*7
+    df['hour3'] = ((df.dayofweek == 21) |
+                   (df.dayofweek == 22) | (df.dayofweek == 23))*8
 
 
 def add_siesta(df):
-    df['siesta'] = ((df.hour == 14) + (df.hour == 15) + (df.hour == 16))
+    df['siesta'] = ((df.hour == 14) | (df.hour == 15) | (df.hour == 16))
 
 
 def add_holidays_spain(df):
@@ -67,56 +67,45 @@ def add_holidays_spain(df):
             df.loc[position, 'holidays'] = 0
     df.reset_index(level=0, inplace=True)
 
-def before_holidays_spain(df):
-  df.reset_index(level=0, inplace=True)
 
-  for a in range(int((len(df)-48)/24)):
-    a1 = a+1
-    a2 = a+2
-    if a == 0:
-      for i in range(24):
+def before_holidays_spain(df):
+    df.reset_index(level=0, inplace=True)
+
+    for a in range(int((len(df)-48)/24)):
+        a1 = a+1
+        a2 = a+2
+        if a == 0:
+            for i in range(24):
+                df.loc[i, 'before_holidays'] = 0
+                continue
+
+        else:
+            for i, i1 in zip(range(a*24, a1*24), range(a1*24, a2*24)):
+                if df.loc[i1, "holidays"] == 1 and df.loc[i, "holidays"] != 1:
+                    df.loc[i, 'before_holidays'] = 1
+                else:
+                    df.loc[i, 'before_holidays'] = 0
+                continue
+
+    for i in range(len(df)-49, len(df)):
         df.loc[i, 'before_holidays'] = 0
         continue
-
-    else:
-      for i, i1 in zip(range(a*24, a1*24),range(a1*24, a2*24)):
-        if df.loc[i1,"holidays"] == 1 and df.loc[i,"holidays"] != 1:
-          df.loc[i, 'before_holidays'] = 1 
-        else:
-          df.loc[i, 'before_holidays'] = 0
-        continue
-
-  for i in range(len(df)-49,len(df)):
-    df.loc[i, 'before_holidays'] = 0
-    continue
 
 
 def add_weekend(df):
     # assert df.dayofweek, "run add_hour_dayofweek_month before running this"
     # Generate 'weekend' feature
-    df['weekend'] = (df.dayofweek == 6)*2
+    df['weekend'] = (df.dayofweek == 5)*2
     df['weekend'] += (df.dayofweek == 6)*1
-    df['weekend'] += (df.dayofweek == 6)*0
-    # df.set_index('time', inplace=True)
-    # for i in _range(len(df), desc='add_weekend'):
-    #     position = df.index[i]
-    #     dayofweek = position.dayofweek()
-    #     if (dayofweek == 6):
-    #         df.loc[position, 'dayofweek'] = 2
-    #     elif (dayofweek == 5):
-    #         df.loc[position, 'dayofweek'] = 1
-    #     else:
-    #         df.loc[position, 'dayofweek'] = 0
-    # df.reset_index(level=0, inplace=True)
 
 
 def add_business_hour(df):
     # Generate 'business hour' feature
     df.set_index('time', inplace=True)
     hour = df.hour
-    df['business hour'] = (((hour > 8) * (hour < 14))
-                           + ((hour > 16) * (hour < 21)))*2
-    df['business hour'] += ((hour >= 14) * (hour <= 16))*1
+    df['business hour'] = (((hour > 8) & (hour < 14))
+                           | ((hour > 16) & (hour < 21)))*2
+    df['business hour'] |= ((hour >= 14) & (hour <= 16))*1
     df.reset_index(level=0, inplace=True)
 
 
@@ -231,9 +220,10 @@ def bin_cloud_coverage(df):
         else:
             continue
 
-def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
-    n_vars = 1 if type(data) is list else data.shape[1]
-    df = DataFrame(data)
+
+def series_to_supervised(df, n_in=1, n_out=1, dropnan=True):
+    n_vars = df.shape[1]
+    # df = DataFrame(data)
     cols, names = list(), list()
     # input sequence (t-n, ... t-1)
     for i in range(n_in, 0, -1):
@@ -247,13 +237,13 @@ def series_to_supervised(data, n_in=1, n_out=1, dropnan=True):
         else:
             names += [('var%d(t+%d)' % (j+1, i)) for j in range(n_vars)]
     # put it all together
-    agg = concat(cols, axis=1)
+    agg = pd.concat(cols, axis=1)
     agg.columns = names
     # drop rows with NaN values
     if dropnan:
         agg.dropna(inplace=True)
     return agg
-### Example of lagging by 24h #### 
-### input shape (26304, 43) ###
-train_series = series_to_supervised(train_data,24,1,True)
-### output shape (26280, 1076) ###
+# ### Example of lagging by 24h ####
+# ### input shape (26304, 43) ###
+# train_series = series_to_supervised(train_data,24,1,True)
+# ### output shape (26280, 1076) ###
