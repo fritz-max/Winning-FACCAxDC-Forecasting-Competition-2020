@@ -21,21 +21,30 @@ y = pd.read_csv(Y_TRAIN_PATH)
 
 add_time(X)
 add_hour_dayofweek_month(X)
-add_hour_batches(X)
-add_weekend(X)
-add_business_hour(X)
-add_siesta(X)
+# add_hour_batches(X)
+# add_weekend(X)
+# add_business_hour(X)
+# add_siesta(X)
 add_holidays_spain(X)
-add_city_weight(X)
-normalize(X)
-
+# before_holidays_spain(X)
+# add_city_weight(X)
+# normalize(X)
+# print(X.columns)
+# exit()
+# cols2drop = ['time', 'ValueDateTimeUTC', 'Madrid_d2m', 'Madrid_t2m', 'Madrid_i10fg',
+#              'Madrid_sp', 'Madrid_tcc', 'Madrid_tp', 'Barcelona_d2m',
+#              'Barcelona_t2m', 'Barcelona_i10fg', 'Barcelona_sp', 'Barcelona_tcc',
+#              'Barcelona_tp', 'Valencia_d2m', 'Valencia_t2m', 'Valencia_i10fg',
+#              'Valencia_sp', 'Valencia_tcc', 'Valencia_tp', 'Seville_d2m',
+#              'Seville_t2m', 'Seville_i10fg', 'Seville_sp', 'Seville_tcc',
+#              'Seville_tp', 'Zaragoza_d2m', 'Zaragoza_t2m', 'Zaragoza_i10fg',
+#              'Zaragoza_sp', 'Zaragoza_tcc', 'Zaragoza_tp', 'Malaga_d2m',
+#              'Malaga_t2m', 'Malaga_i10fg', 'Malaga_sp', 'Malaga_tcc', 'Malaga_tp',
+#              'date']
+# X.drop(columns=cols2drop, inplace=True)
+holidays = X.holidays[X.holidays == 1]
 X.drop(columns=['ValueDateTimeUTC', 'time', 'date'], inplace=True)
 y.drop(columns=['ValueDateTimeUTC'], inplace=True)
-
-xgb_model = xgb.XGBRegressor()
-param_search = {
-    'max_depth': randint(5, 20),
-    'learning_rate': loguniform(1e-4, 1e0)}
 
 split_frac = 0.9
 X_train = X[:int(X.shape[0]*split_frac)]
@@ -62,9 +71,6 @@ X_test = X[int(X.shape[0]*split_frac):]
 y_train = y[:int(X.shape[0]*split_frac)]
 y_test = y[int(X.shape[0]*split_frac):]
 
-i = 1
-score = []
-
 
 fit = xgb_model.fit(
     X_train,
@@ -83,3 +89,8 @@ mape = np.mean(np.abs((y_test.to_numpy() - test_preds.reshape((-1, 1))) /
                       np.abs(y_test.to_numpy())))
 print('Mean Absolute Percentage Error (MAPE):', round(mape * 100, 2))
 print('Accuracy:', round(100*(1 - mape), 2))
+
+plt.figure(figsize=(16, 6))
+plt.plot(y_test.to_numpy())
+plt.plot(test_preds)
+plt.show()
