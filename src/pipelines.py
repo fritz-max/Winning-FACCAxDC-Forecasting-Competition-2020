@@ -15,19 +15,37 @@ def add_time(df):
     # df.set_index('time', inplace=True)
 
 
-def add_hour_weekday_month(df):
-    # Generate 'hour', 'weekday' and 'month' features
+def add_hour_dayofweek_month(df):
+    # Generate 'hour', 'dayofweek' and 'month' features
     df.set_index('time', inplace=True)
     df['date'] = df.index
     df['hour'] = df['date'].dt.hour
     df['dayofweek'] = df['date'].dt.dayofweek
     df['quarter'] = df['date'].dt.quarter
     df['month'] = df['date'].dt.month
-    df['year'] = df['date'].dt.year
     df['dayofyear'] = df['date'].dt.dayofyear
     df['dayofmonth'] = df['date'].dt.day
     df['weekofyear'] = df['date'].dt.weekofyear
     df.reset_index(level=0, inplace=True)
+
+
+def add_hour_batches(df):
+    df['hour3'] = ((df.dayofweek == 0) +
+                   (df.dayofweek == 1)+(df.dayofweek == 2))*1
+    df['hour3'] = ((df.dayofweek == 3) +
+                   (df.dayofweek == 4)+(df.dayofweek == 5))*2
+    df['hour3'] = ((df.dayofweek == 6) +
+                   (df.dayofweek == 7)+(df.dayofweek == 8))*3
+    df['hour3'] = ((df.dayofweek == 9)+(df.dayofweek == 10) +
+                   (df.dayofweek == 11))*4
+    df['hour3'] = ((df.dayofweek == 12) +
+                   (df.dayofweek == 13)+(df.dayofweek == 14))*5
+    df['hour3'] = ((df.dayofweek == 15) +
+                   (df.dayofweek == 16)+(df.dayofweek == 17))*4
+    df['hour3'] = ((df.dayofweek == 18) +
+                   (df.dayofweek == 19)+(df.dayofweek == 20))*4
+    df['hour3'] = ((df.dayofweek == 21) +
+                   (df.dayofweek == 22)+(df.dayofweek == 23))*4
 
 
 def add_siesta(df):
@@ -51,36 +69,31 @@ def add_holidays_spain(df):
 
 
 def add_weekend(df):
-    # assert df.weekday, "run add_hour_weekday_month before running this"
+    # assert df.dayofweek, "run add_hour_dayofweek_month before running this"
     # Generate 'weekend' feature
-    df['weekday'] = (df.weekday == 6)*2
-    df['weekday'] += (df.weekday == 6)*1
-    df['weekday'] += (df.weekday == 6)*0
+    df['weekend'] = (df.dayofweek == 6)*2
+    df['weekend'] += (df.dayofweek == 6)*1
+    df['weekend'] += (df.dayofweek == 6)*0
     # df.set_index('time', inplace=True)
     # for i in _range(len(df), desc='add_weekend'):
     #     position = df.index[i]
-    #     weekday = position.weekday()
-    #     if (weekday == 6):
-    #         df.loc[position, 'weekday'] = 2
-    #     elif (weekday == 5):
-    #         df.loc[position, 'weekday'] = 1
+    #     dayofweek = position.dayofweek()
+    #     if (dayofweek == 6):
+    #         df.loc[position, 'dayofweek'] = 2
+    #     elif (dayofweek == 5):
+    #         df.loc[position, 'dayofweek'] = 1
     #     else:
-    #         df.loc[position, 'weekday'] = 0
+    #         df.loc[position, 'dayofweek'] = 0
     # df.reset_index(level=0, inplace=True)
 
 
 def add_business_hour(df):
     # Generate 'business hour' feature
     df.set_index('time', inplace=True)
-    for i in _range(len(df), desc='add_business_hour'):
-        position = df.index[i]
-        hour = position.hour
-        if ((hour > 8 and hour < 14) or (hour > 16 and hour < 21)):
-            df.loc[position, 'business hour'] = 2
-        elif (hour >= 14 and hour <= 16):
-            df.loc[position, 'business hour'] = 1
-        else:
-            df.loc[position, 'business hour'] = 0
+    hour = df.hour
+    df['business hour'] = (((hour > 8) * (hour < 14))
+                           + ((hour > 16) * (hour < 21)))*2
+    df['business hour'] += ((hour >= 14) * (hour <= 16))*1
     df.reset_index(level=0, inplace=True)
 
 
