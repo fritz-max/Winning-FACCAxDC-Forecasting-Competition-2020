@@ -52,17 +52,25 @@ def add_holidays_spain(df):
 def before_holidays_spain(df):
   df.reset_index(level=0, inplace=True)
 
-  for i in range(len(df)-1):
-    if i == 0:
-      df.loc[i, 'before_holidays'] = 0
-      continue
-    else:
-      if df.loc[i+1,"holidays"] == 1 and df.loc[i,"holidays"] != 1:
-        df.loc[i, 'before_holidays'] = 1 
-      else:
+  for a in range(int((len(df)-48)/24)):
+    a1 = a+1
+    a2 = a+2
+    if a == 0:
+      for i in range(24):
         df.loc[i, 'before_holidays'] = 0
-      continue
-  df.loc[len(df)-1, 'before_holidays'] = 0
+        continue
+
+    else:
+      for i, i1 in zip(range(a*24, a1*24),range(a1*24, a2*24)):
+        if df.loc[i1,"holidays"] == 1 and df.loc[i,"holidays"] != 1:
+          df.loc[i, 'before_holidays'] = 1 
+        else:
+          df.loc[i, 'before_holidays'] = 0
+        continue
+
+  for i in range(len(df)-49,len(df)):
+    df.loc[i, 'before_holidays'] = 0
+    continue
 
 
 def add_weekend(df):
