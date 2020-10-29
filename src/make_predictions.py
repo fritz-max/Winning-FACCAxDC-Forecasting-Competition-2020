@@ -27,12 +27,12 @@ cols2incl = [
 X_test = X_test[cols2incl]
 
 xgb_model = XGBRegressor(n_jobs=8)
-xgb_model.load_model("xgb_subset.model")
+xgb_model.load_model("new5.model")
 
 test_preds = xgb_model.predict(X_test)
 
 print(test_preds[:5]) 
 
-filename = "predictions2"
+filename = "predictions5"
 
 pd.DataFrame({"Prediction": test_preds}).to_csv(f"../Case_material/predictions/{filename}.csv", sep=",", index=False)

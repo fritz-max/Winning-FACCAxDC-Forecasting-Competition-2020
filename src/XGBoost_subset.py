@@ -9,7 +9,6 @@ from sklearn.model_selection import TimeSeriesSplit, RandomizedSearchCV
 from sklearn.ensemble import RandomForestRegressor
 import numpy as np
 from scipy.stats import uniform, loguniform, randint
-import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 sns.set()
@@ -68,45 +67,61 @@ X_valset = X_train[int(X_train.shape[0]*split_frac):]
 y_trainset = y_train[:int(X_train.shape[0]*split_frac)]
 y_valset = y_train[int(X_train.shape[0]*split_frac):]
 
-n_estimators = 81
+# pred5 FINAL
+n_estimators = 389
 params = {
     # Parameters that we are going to tune.
-    'learning_rate': 0.14,
+    'learning_rate': 0.056215192748164444,
     'max_depth': 7,
-    # Other parameters
+    'min_child_weight': 1,
+    'gamma': 0.5,
     'objective': 'reg:squarederror'
 }
+
+
+# pred 2
+
+# 'learning_rate': 0.15687937227498,
+# 'max_depth': 6,
+# 'min_child_weight': 0.5,
+# 'gamma': 1,
+# Other parameters
 
 xgb_model = XGBRegressor(
     **params,
     n_estimators=n_estimators,
     n_jobs=8)
 
-fit = xgb_model.fit(
-    X_trainset,
-    y_trainset,
-    eval_set=[(X_trainset, y_trainset), (X_valset, y_valset)],
-    early_stopping_rounds=25)
-
+# ============================================================
+# UNCOMMENT FOR EVALUATION
 
 # fit = xgb_model.fit(
-#     X_train,
-#     y_train)
+#     X_trainset,
+#     y_trainset,
+#     eval_set=[(X_trainset, y_trainset), (X_valset, y_valset)],
+#     early_stopping_rounds=25)
 
-# fit.save_model('0001.model')
+# test_preds = xgb_model.predict(X_valset)
 
-test_preds = xgb_model.predict(X_valset)
+# print('MSE:', round(mean_squared_error(y_valset.to_numpy(),
+#                                        test_preds.reshape((-1, 1))), 2))
+# print('R^2:', round(r2_score(y_valset.to_numpy(), test_preds.reshape((-1, 1))), 2))
 
-print('MSE:', round(mean_squared_error(y_valset.to_numpy(),
-                                       test_preds.reshape((-1, 1))), 2))
-print('R^2:', round(r2_score(y_valset.to_numpy(), test_preds.reshape((-1, 1))), 2))
+# mape = np.mean(np.abs((y_valset.to_numpy() - test_preds.reshape((-1, 1))) /
+#                       np.abs(y_valset.to_numpy())))
+# print('Mean Absolute Percentage Error (MAPE):', round(mape * 100, 2))
+# print('Accuracy:', round(100*(1 - mape), 2))
 
-mape = np.mean(np.abs((y_valset.to_numpy() - test_preds.reshape((-1, 1))) /
-                      np.abs(y_valset.to_numpy())))
-print('Mean Absolute Percentage Error (MAPE):', round(mape * 100, 2))
-print('Accuracy:', round(100*(1 - mape), 2))
+# plt.figure(figsize=(16, 6))
+# plt.plot(y_valset.to_numpy())
+# plt.plot(test_preds)
+# plt.show()
 
-plt.figure(figsize=(16, 6))
-plt.plot(y_valset.to_numpy())
-plt.plot(test_preds)
-plt.show()
+# ==============================================================
+# UNCOMMENT FOR FINAL TRAINING AND MODEL SAVING
+
+fit = xgb_model.fit(
+    X_train,
+    y_train)
+
+fit.save_model('new6.model')
