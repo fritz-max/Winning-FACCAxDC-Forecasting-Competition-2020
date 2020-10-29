@@ -1,0 +1,6 @@
+num: 3, 
+Best MSE: 1623997.8568012612, 
+included:
+hour
+dayofweek
+dayofyear

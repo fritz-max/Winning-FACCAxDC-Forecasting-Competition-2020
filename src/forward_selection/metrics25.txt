@@ -1,0 +1,28 @@
+num: 25, 
+Best MSE: 608098.955649614, 
+included:
+hour
+dayofweek
+dayofyear
+Madrid_t2m
+holidays
+Malaga_t2m
+Malaga_d2m
+weekofyear
+hour3
+Seville_t2m
+Seville_tp
+quarter
+Zaragoza_t2m
+Valencia_tp
+Barcelona_tcc
+dayofmonth
+Madrid_tcc
+Barcelona_i10fg
+weekend
+month
+Zaragoza_d2m
+Madrid_i10fg
+Seville_tcc
+Barcelona_tp
+Malaga_sp
