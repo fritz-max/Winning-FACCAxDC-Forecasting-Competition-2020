@@ -15,7 +15,7 @@ def add_time(df):
     # df.set_index('time', inplace=True)
 
 
-def add_hour_weekday_month2(df):
+def add_hour_weekday_month(df):
     # Generate 'hour', 'weekday' and 'month' features
     df.set_index('time', inplace=True)
     df['date'] = df.index
@@ -47,20 +47,6 @@ def add_holidays_spain(df):
 
         else:
             df.loc[position, 'holidays'] = 0
-    df.reset_index(level=0, inplace=True)
-
-
-def add_hour_weekday_month(df):
-    # Generate 'hour', 'weekday' and 'month' features
-    df.set_index('time', inplace=True)
-    for i in _range(len(df), desc='add_hour_weekday_month'):
-        position = df.index[i]
-        hour = position.hour
-        weekday = position.weekday()
-        month = position.month
-        df.loc[position, 'hour'] = hour
-        df.loc[position, 'weekday'] = weekday
-        df.loc[position, 'month'] = month
     df.reset_index(level=0, inplace=True)
 
 
