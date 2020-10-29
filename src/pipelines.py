@@ -55,9 +55,9 @@ def add_holidays_spain(df):
     holidays_leap_year = [1, 6, 122, 228, 286, 306, 341, 343, 360]
     holidays = [1, 6, 121, 227, 285, 305, 340, 342, 359]
     df['year'] = df['date'].dt.year
-    df['holiday'] = df.dayofyear.isin(
+    df['holidays'] = df.dayofyear.isin(
         holidays) & df.year.isin([2015, 2017, 2018, 2019])
-    df['holiday'] += df.dayofyear.isin(holidays_leap_year) & (df.year == 2016)
+    df['holidays'] += df.dayofyear.isin(holidays_leap_year) & (df.year == 2016)
     df.drop(columns=['year'], inplace=True)
 
 
