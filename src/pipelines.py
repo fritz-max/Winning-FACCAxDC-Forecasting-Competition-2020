@@ -1,5 +1,4 @@
 from datetime import date
-import holidays
 import pandas as pd
 from tqdm import tqdm
 
@@ -53,19 +52,13 @@ def add_siesta(df):
 
 
 def add_holidays_spain(df):
-    df.set_index('time', inplace=True)
-    spain_holidays = holidays.ES()
-
-    for i, d in zip(range(len(df)), df.index.date):
-        position = df.index[i]
-        # date = position.date
-        # print(d)
-        if d in spain_holidays:
-            df.loc[position, 'holidays'] = 1
-
-        else:
-            df.loc[position, 'holidays'] = 0
-    df.reset_index(level=0, inplace=True)
+    holidays_leap_year = [1, 6, 122, 228, 286, 306, 341, 343, 360]
+    holidays = [1, 6, 121, 227, 285, 305, 340, 342, 359]
+    df['year'] = df['date'].dt.year
+    df['holiday'] = df.dayofyear.isin(
+        holidays) & df.year.isin([2015, 2017, 2018, 2019])
+    df['holiday'] += df.dayofyear.isin(holidays_leap_year) & (df.year == 2016)
+    df.drop(columns=['year'], inplace=True)
 
 
 def before_holidays_spain(df):
