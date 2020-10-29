@@ -15,6 +15,41 @@ def add_time(df):
     # df.set_index('time', inplace=True)
 
 
+def add_hour_weekday_month2(df):
+    # Generate 'hour', 'weekday' and 'month' features
+    df.set_index('time', inplace=True)
+    df['date'] = df.index
+    df['hour'] = df['date'].dt.hour
+    df['dayofweek'] = df['date'].dt.dayofweek
+    df['quarter'] = df['date'].dt.quarter
+    df['month'] = df['date'].dt.month
+    df['year'] = df['date'].dt.year
+    df['dayofyear'] = df['date'].dt.dayofyear
+    df['dayofmonth'] = df['date'].dt.day
+    df['weekofyear'] = df['date'].dt.weekofyear
+    df.reset_index(level=0, inplace=True)
+
+
+def add_siesta(df):
+    df['siesta'] = ((df.hour == 14) + (df.hour == 15) + (df.hour == 16))
+
+
+def add_holidays_spain(df):
+    df.set_index('time', inplace=True)
+    spain_holidays = holidays.ES()
+
+    for i, d in zip(range(len(df)), df.index.date):
+        position = df.index[i]
+        # date = position.date
+        # print(d)
+        if d in spain_holidays:
+            df.loc[position, 'holidays'] = 1
+
+        else:
+            df.loc[position, 'holidays'] = 0
+    df.reset_index(level=0, inplace=True)
+
+
 def add_hour_weekday_month(df):
     # Generate 'hour', 'weekday' and 'month' features
     df.set_index('time', inplace=True)
@@ -32,17 +67,20 @@ def add_hour_weekday_month(df):
 def add_weekend(df):
     # assert df.weekday, "run add_hour_weekday_month before running this"
     # Generate 'weekend' feature
-    df.set_index('time', inplace=True)
-    for i in _range(len(df), desc='add_weekend'):
-        position = df.index[i]
-        weekday = position.weekday()
-        if (weekday == 6):
-            df.loc[position, 'weekday'] = 2
-        elif (weekday == 5):
-            df.loc[position, 'weekday'] = 1
-        else:
-            df.loc[position, 'weekday'] = 0
-    df.reset_index(level=0, inplace=True)
+    df['weekday'] = (df.weekday == 6)*2
+    df['weekday'] += (df.weekday == 6)*1
+    df['weekday'] += (df.weekday == 6)*0
+    # df.set_index('time', inplace=True)
+    # for i in _range(len(df), desc='add_weekend'):
+    #     position = df.index[i]
+    #     weekday = position.weekday()
+    #     if (weekday == 6):
+    #         df.loc[position, 'weekday'] = 2
+    #     elif (weekday == 5):
+    #         df.loc[position, 'weekday'] = 1
+    #     else:
+    #         df.loc[position, 'weekday'] = 0
+    # df.reset_index(level=0, inplace=True)
 
 
 def add_business_hour(df):
@@ -159,17 +197,6 @@ def normalize(df):
         df[type] = df[type].apply(curried_norm)
 
 
-def siesta(df):
-    for i in range(len(df)):
-        position = df.index[i]
-        hour = position.hour
-        if hour in [14, 15, 16]:
-            df.loc[position, 'siesta'] = 1
-
-        else:
-            df.loc[position, 'siesta'] = 0
-
-
 def bin_cloud_coverage(df):
     def bin(x):
         if x > 0.8:
@@ -181,17 +208,3 @@ def bin_cloud_coverage(df):
             df[col+"_binary"] = df[col].apply(bin)
         else:
             continue
-
-
-def holidays_spain(df):
-    spain_holidays = holidays.ES()
-
-    for i, d in zip(range(len(df)), df.index.date):
-        position = df.index[i]
-        #date = position.date
-        # print(d)
-        if d in spain_holidays:
-            df.loc[position, 'holidays'] = 1
-
-        else:
-            df.loc[position, 'holidays'] = 0
