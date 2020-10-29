@@ -1,0 +1,12 @@
+num: 9, 
+Best MSE: 634174.8440214556, 
+included:
+hour
+dayofweek
+dayofyear
+Madrid_t2m
+holidays
+Malaga_t2m
+Malaga_d2m
+weekofyear
+hour3

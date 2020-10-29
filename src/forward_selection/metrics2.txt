@@ -1,0 +1,5 @@
+num: 2, 
+Best MSE: 3670491.056384874, 
+included:
+hour
+dayofweek
