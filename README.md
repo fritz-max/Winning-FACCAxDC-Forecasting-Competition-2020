@@ -1,4 +1,4 @@
-# energy-forecasting
+# Winning the FACCAxDC Energy Forecasting Competition 2020
 This repo contains the code used by *Team Anaconda* to win the Energy forecasting competition 2020 hosted by Finance and Consulting Club Aarhus (FACCA) and Danske Commodities. 
 
 [Event description:](https://facca.dk/events/facca-x-dc-forecasting-competition?fbclid=IwAR1egmMOBNAQKFcqitFw4oWuQKZ58bZE7b6Z2Vwenzez_lLgMJgGhmIn4Gc)
