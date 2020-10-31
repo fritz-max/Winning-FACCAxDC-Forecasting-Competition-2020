@@ -1,40 +1,14 @@
-from sys import path
-path.append("../")
-from pipelines import *
-from sklearn.metrics import mean_squared_error, r2_score
-from sklearn.decomposition import PCA
-from sklearn.model_selection import train_test_split
-from xgboost import XGBRegressor, XGBRFRegressor, DMatrix, cv
+from preprocessing import load_data
+from feature_engineering import *
+from sklearn.metrics import mean_squared_error
 import pandas as pd
 import xgboost as xgb
-from sklearn.model_selection import TimeSeriesSplit, RandomizedSearchCV
 import numpy as np
-from scipy.stats import uniform, loguniform, randint
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
 import time
 import itertools
-sns.set()
 
-X_TRAIN_PATH = '../../Case_material/train/X_train.csv'
-Y_TRAIN_PATH = '../../Case_material/train/y_train.csv'
-
-X = pd.read_csv(X_TRAIN_PATH)
-y = pd.read_csv(Y_TRAIN_PATH)
-
-add_time(X)
-add_hour_dayofweek_month(X)
-add_hour_batches(X)
-add_weekend(X)
-add_business_hour(X)
-add_siesta(X)
-add_holidays_spain(X)
-add_city_weight(X)
-min_max_scale(X)
-
-X.drop(columns=['ValueDateTimeUTC', 'time', 'date'], inplace=True)
-y.drop(columns=['ValueDateTimeUTC'], inplace=True)
+(X, y) = load_data(train=True, selected_features=False)
 
 split_frac = 0.9
 X_train = X[:int(X.shape[0]*split_frac)]
@@ -42,34 +16,25 @@ X_test = X[int(X.shape[0]*split_frac):]
 y_train = y[:int(X.shape[0]*split_frac)]
 y_test = y[int(X.shape[0]*split_frac):]
 
-n_estimators = 2000
 params = {
-    # Parameters that we are going to tune.
-    'learning_rate': 0.13872832647046318,
+    'learning_rate': 0.0562,
     'max_depth': 7,
-    # Other parameters
-    'objective': 'reg:squarederror'
+    'min_child_weight': 1,
+    'gamma': 0.5,
+    'objective': 'reg:squarederror',
+    'n_estimators': 1000,  # should have found solution before 1000
 }
-
-split_frac = 0.9
-X_train = X[:int(X.shape[0]*split_frac)]
-X_test = X[int(X.shape[0]*split_frac):]
-y_train = y[:int(X.shape[0]*split_frac)]
-y_test = y[int(X.shape[0]*split_frac):]
-
-i = 1
-score = []
-
-#  = pd.DataFrame(columns = ['model', 'features', 'MSE', 'R_squared'])
 
 model_computations = 0
 starting_time = time.time()
 
-included_features = [] # features already included in the selection (at start: no features yet)
-remaining_features = list(X_train.columns.values) # features to be included
+included_features = []  # features already included in the selection (at start: no features yet)
+remaining_features = list(X_train.columns.values)  # features to be included
 
 results = []
 metrics = []
+best_feature = None
+best_model = None
 
 # loop over the amount of all features
 for k in range(1, len(X_train.columns)+1):
@@ -90,9 +55,8 @@ for k in range(1, len(X_train.columns)+1):
         X_train_subset = X_train[list(feature)+included_features]
         X_test_subset = X_test[list(feature)+included_features]
         
-        xgb_model = XGBRegressor(
+        xgb_model = xgb.XGBRegressor(
             **params,
-            n_estimators=n_estimators,
             n_jobs=6)
 
         fit = xgb_model.fit(
