@@ -1,5 +1,5 @@
 # Winning the FACCAxDC Energy Forecasting Competition 2020
-This repo contains the code used by *Team Anaconda* to win the Energy forecasting competition 2020 hosted by Finance and Consulting Club Aarhus (FACCA) and Danske Commodities. 
+This repo contains the code used by our team to win the Energy forecasting competition 2020 hosted by Finance and Consulting Club Aarhus (FACCA) and Danske Commodities. 
 
 [Event description:](https://facca.dk/events/facca-x-dc-forecasting-competition?fbclid=IwAR1egmMOBNAQKFcqitFw4oWuQKZ58bZE7b6Z2Vwenzez_lLgMJgGhmIn4Gc)
 > In collaboration with Danske Commodities, FACCA is inviting you to a virtual Forecasting Competition centered around data and value-generation. DC is a data-driven energy trading company, executing more than 5700 trades a day. Electricity demand is a central feature used specifically to optimise these trading decisions, and any improvements in forecasting accuracy directly generate more value in DC. This Forecasting Competition will make it possible for you to explore your data science skills by building a forecasting model of your own choice.
@@ -7,10 +7,10 @@ This repo contains the code used by *Team Anaconda* to win the Energy forecastin
 15 teams of students from Aarhus University participated in the competition that ran from 27th to 29th of October 2020. 
 
 **The Team consisted of:**
-- Osvald Frisk
-- Mikołaj Plotecki
-- Hans-Hendrik Karro
-- Friedrich Dörmann 
+- [Osvald Frisk] (https://github.com/OsvaldFrisk)
+- [Mikołaj Plotecki] (https://github.com/GitHubUser97)
+- [Hans-Hendrik Karro] (https://github.com/hanshendrikkarro)
+- [Friedrich Dörmann] (https://github.com/fritz-max) 
 
 ## The Case
 The challenge was about forecasting hourly Energy Consumption in Spain based on a dataset containing weather data for 6 largest cities in spain: Madrid, Barcelona, Valencia, Sevilla, Zaragoza and Malaga.
