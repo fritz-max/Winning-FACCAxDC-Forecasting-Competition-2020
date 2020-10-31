@@ -31,7 +31,7 @@ add_business_hour(X)
 add_siesta(X)
 add_holidays_spain(X)
 add_city_weight(X)
-normalize(X)
+min_max_scale(X)
 
 X.drop(columns=['ValueDateTimeUTC', 'time', 'date'], inplace=True)
 y.drop(columns=['ValueDateTimeUTC'], inplace=True)
