@@ -13,7 +13,7 @@ add_business_hour(X_test)
 add_siesta(X_test)
 add_holidays_spain(X_test)
 add_city_weight(X_test)
-normalize(X_test)
+min_max_scale(X_test)
 
 cols2incl = [
     "hour",

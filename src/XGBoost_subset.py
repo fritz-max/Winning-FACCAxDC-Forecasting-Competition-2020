@@ -27,7 +27,7 @@ add_business_hour(X_train)
 add_siesta(X_train)
 add_holidays_spain(X_train)
 add_city_weight(X_train)
-normalize(X_train)
+min_max_scale(X_train)
 
 cols2incl = [
     "hour",

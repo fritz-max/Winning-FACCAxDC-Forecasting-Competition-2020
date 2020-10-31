@@ -1,9 +1,0 @@
-num: 6, 
-Best MSE: 692585.8727635819, 
-included:
-hour
-dayofweek
-dayofyear
-Madrid_t2m
-holidays
-Malaga_t2m

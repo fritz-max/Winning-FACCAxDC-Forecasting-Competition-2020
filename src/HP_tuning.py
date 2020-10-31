@@ -35,12 +35,11 @@ y = pd.read_csv(Y_TRAIN_PATH)
 
 add_time(X)
 add_hour_dayofweek_month(X)
-add_hour_batches(X)
 add_weekend(X)
 add_business_hour(X)
 add_siesta(X)
 add_holidays_spain(X)
-normalize(X)
+min_max_scale(X)
 add_city_weight(X)
 
 cols2incl = [

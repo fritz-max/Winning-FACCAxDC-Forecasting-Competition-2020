@@ -1,21 +1,14 @@
 from datetime import date
 import pandas as pd
-from tqdm import tqdm
-
-
-def _range(N, desc=''):
-    return tqdm(range(N), desc=desc)
-
 
 def add_time(df):
     df['time'] = pd.to_datetime(df['ValueDateTimeUTC'],
                                 utc=True, infer_datetime_format=True)
-    # df = df.drop(['ValueDateTimeUTC'], axis=1)
-    # df.set_index('time', inplace=True)
 
 
 def add_hour_dayofweek_month(df):
-    # Generate 'hour', 'dayofweek' and 'month' features
+    '''Generate time related features
+    '''
     df.set_index('time', inplace=True)
     df['date'] = df.index
     df['hour'] = df['date'].dt.hour
@@ -28,28 +21,20 @@ def add_hour_dayofweek_month(df):
     df.reset_index(level=0, inplace=True)
 
 
-def add_hour_batches(df):
-    df['hour3'] = ((df.dayofweek == 0) |
-                   (df.dayofweek == 1) | (df.dayofweek == 2))*1
-    df['hour3'] = ((df.dayofweek == 3) |
-                   (df.dayofweek == 4) | (df.dayofweek == 5))*2
-    df['hour3'] = ((df.dayofweek == 6) |
-                   (df.dayofweek == 7) | (df.dayofweek == 8))*3
-    df['hour3'] = ((df.dayofweek == 9) | (df.dayofweek == 10) |
-                   (df.dayofweek == 11))*4
-    df['hour3'] = ((df.dayofweek == 12) |
-                   (df.dayofweek == 13) | (df.dayofweek == 14))*5
-    df['hour3'] = ((df.dayofweek == 15) |
-                   (df.dayofweek == 16) | (df.dayofweek == 17))*6
-    df['hour3'] = ((df.dayofweek == 18) |
-                   (df.dayofweek == 19) | (df.dayofweek == 20))*7
-    df['hour3'] = ((df.dayofweek == 21) |
-                   (df.dayofweek == 22) | (df.dayofweek == 23))*8
-
 
 def add_siesta(df):
     df['siesta'] = ((df.hour == 14) | (df.hour == 15) | (df.hour == 16))
 
+def add_hour_batches(df):
+    assert 'hour' in df, "run add_hour_dayofweek_month before running this"
+    df['hour3'] = ((df.hour== 0) | (df.hour== 1) | (df.hour== 2))*1
+    df['hour3'] = ((df.hour== 3) | (df.hour== 4) | (df.hour== 5))*2
+    df['hour3'] = ((df.hour== 6) | (df.hour== 7) | (df.hour== 8))*3
+    df['hour3'] = ((df.hour== 9) | (df.hour== 10) | (df.hour== 11))*4
+    df['hour3'] = ((df.hour== 12) | (df.hour== 13) | (df.hour== 14))*5
+    df['hour3'] = ((df.hour== 15) | (df.hour== 16) | (df.hour== 17))*6
+    df['hour3'] = ((df.hour== 18) | (df.hour== 19) | (df.hour== 20))*7
+    df['hour3'] = ((df.hour== 21) | (df.hour== 22) | (df.hour== 23))*8
 
 def add_holidays_spain(df):
     holidays_leap_year = [1, 6, 122, 228, 286, 306, 341, 343, 360]
@@ -61,38 +46,16 @@ def add_holidays_spain(df):
     df.drop(columns=['year'], inplace=True)
 
 
-def before_holidays_spain(df):
-    df.reset_index(level=0, inplace=True)
-
-    for a in range(int((len(df)-48)/24)):
-        a1 = a+1
-        a2 = a+2
-        if a == 0:
-            for i in range(24):
-                df.loc[i, 'before_holidays'] = 0
-                continue
-
-        else:
-            for i, i1 in zip(range(a*24, a1*24), range(a1*24, a2*24)):
-                if df.loc[i1, "holidays"] == 1 and df.loc[i, "holidays"] != 1:
-                    df.loc[i, 'before_holidays'] = 1
-                else:
-                    df.loc[i, 'before_holidays'] = 0
-                continue
-
-    for i in range(len(df)-49, len(df)):
-        df.loc[i, 'before_holidays'] = 0
-        continue
-
 
 def add_weekend(df):
-    # assert df.dayofweek, "run add_hour_dayofweek_month before running this"
+    assert 'dayofweek' in df, "run add_hour_dayofweek_month before running this"
     # Generate 'weekend' feature
     df['weekend'] = (df.dayofweek == 5)*2
     df['weekend'] += (df.dayofweek == 6)*1
 
 
 def add_business_hour(df):
+    assert 'hour' in df, "run add_hour_dayofweek_month before running this"
     # Generate 'business hour' feature
     df.set_index('time', inplace=True)
     hour = df.hour
@@ -103,7 +66,9 @@ def add_business_hour(df):
 
 
 def add_avgs(df):
-    '''script for creating a dataset only comprised of the average of the different types of features for the cities'''
+    '''script for creating a dataset only comprised of the average of the
+    different types of features for the cities
+    '''
     d2ms = ['Madrid_d2m', 'Barcelona_d2m', 'Valencia_d2m',
             'Seville_d2m', 'Zaragoza_d2m', 'Malaga_d2m']
 
@@ -130,8 +95,9 @@ def add_avgs(df):
     df['tps'] = df[tps].mean(axis=1).round(2)
 
 
-def add_city_weight(df, as_features=False):
-    # Calculate the weight of every city
+def add_city_weight(df, as_columns=False):
+    '''Calculate the weight of every city
+    '''
     total_pop = 6155116 + 5179243 + 2541000 + 1950000 + 783763 + 600000
 
     weight_Madrid = 6155116 / total_pop
@@ -142,7 +108,7 @@ def add_city_weight(df, as_features=False):
     # not very accurate, only had one from 2018, which was 571026
     weight_Malaga = 600000 / total_pop
 
-    if as_features:
+    if as_columns:
         df['Madrid_w'] = weight_Madrid
         df['Barcelona_w'] = weight_Barcelona
         df['Valencia_w'] = weight_Valencia
@@ -170,11 +136,11 @@ def add_city_weight(df, as_features=False):
             df[c] *= w
 
 
-def _norm(value, max, min):
+def _min_max_scale(value, max, min):
     return (value - min)/(max-min)
 
 
-def normalize(df):
+def min_max_scale(df):
     d2ms = ['Madrid_d2m', 'Barcelona_d2m', 'Valencia_d2m',
             'Seville_d2m', 'Zaragoza_d2m', 'Malaga_d2m']
 
@@ -197,46 +163,12 @@ def normalize(df):
 
     for type in types:
         max, min = df[type].max().max(), df[type].min().min()
-        def curried_norm(val): return _norm(val, max, min)
-        df[type] = df[type].apply(curried_norm)
+        curried_min_max = lambda val: _min_max_scale(val, max, min)
+        df[type] = df[type].apply(curried_min_max)
 
 
-def bin_cloud_coverage(df):
-    def bin(x):
-        if x > 0.8:
-            return 1
-        else:
-            return 0
-    for col in df.columns:
-        if col.endswith("tcc"):
-            df[col+"_binary"] = df[col].apply(bin)
-        else:
-            continue
+def bin_cloud_coverage(df, threshold):
+    tccs = ['Madrid_tcc', 'Barcelona_tcc', 'Valencia_tcc',
+        'Seville_tcc', 'Zaragoza_tcc', 'Malaga_tcc']
+    df[tccs] = (df[tccs] > threshold).astype('bool')
 
-
-def series_to_supervised(df, n_in=1, n_out=1, dropnan=True):
-    n_vars = df.shape[1]
-    # df = DataFrame(data)
-    cols, names = list(), list()
-    # input sequence (t-n, ... t-1)
-    for i in range(n_in, 0, -1):
-        cols.append(df.shift(i))
-        names += [('var%d(t-%d)' % (j+1, i)) for j in range(n_vars)]
-    # forecast sequence (t, t+1, ... t+n)
-    for i in range(0, n_out):
-        cols.append(df.shift(-i))
-        if i == 0:
-            names += [('var%d(t)' % (j+1)) for j in range(n_vars)]
-        else:
-            names += [('var%d(t+%d)' % (j+1, i)) for j in range(n_vars)]
-    # put it all together
-    agg = pd.concat(cols, axis=1)
-    agg.columns = names
-    # drop rows with NaN values
-    if dropnan:
-        agg.dropna(inplace=True)
-    return agg
-# ### Example of lagging by 24h ####
-# ### input shape (26304, 43) ###
-# train_series = series_to_supervised(train_data,24,1,True)
-# ### output shape (26280, 1076) ###
