@@ -10,10 +10,7 @@ This repo contains the code used by *Team Anaconda* to win the Energy forecastin
 - Osvald Frisk
 - Mikołaj Plotecki
 - Hans-Hendrik Karro
-- Friedrich Dörmann
-
-More information: 
-- Linkedin Post: ?
+- Friedrich Dörmann 
 
 ## The Case
 The challenge was about forecasting hourly Energy Consumption in Spain based on a dataset containing weather data for 6 largest cities in spain: Madrid, Barcelona, Valencia, Sevilla, Zaragoza and Malaga.
@@ -50,7 +47,7 @@ After feature engineering, our dataset included 48 features.
 
 ## Model and Feature Selection
 The next step was to select a model and a subset of features. 
-We tried different machine learning approaches including *Linear Regression*, *Convolutional neural nets*, *LSTMs*, *Random Forest* and *XGBoost* and ended up choosing XGBoost based on initial performance on the complete dataset. 
+We tried different machine learning approaches including *Linear Regression*, *Convolutional neural nets*, *LSTMs*, *Random Forest* and *XGBoost* and ended up choosing **XGBoost** based on initial performance on the complete dataset. 
 
 XGBoosts built-in `feature_importance` function gave insights on the vastly different influences of features on the predicitions. 
 
@@ -100,4 +97,4 @@ During Validation, we achieved following results:
 Following plot also shows an example of predictions on the training data:
 <img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/prediction.png" width="700">
 
-On the testing data, the model achieved a MAE of 725.45.
+Finally, the model achieved a MAE of 725.45 on the test set.
