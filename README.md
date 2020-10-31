@@ -6,13 +6,16 @@ This repo contains the code used by *Team Anaconda* to win the Energy forecastin
 
 15 teams of students from Aarhus University participated in the competition that ran from 27th to 29th of October 2020. 
 
-More information: 
-- Linkedin Post: ?
+**The Team consisted of:**
+- Osvald Frisk
+- Mikołaj Plotecki
+- Hans-Hendrik Karro
+- Friedrich Dörmann 
 
 ## The Case
 The challenge was about forecasting hourly Energy Consumption in Spain based on a dataset containing weather data for 6 largest cities in spain: Madrid, Barcelona, Valencia, Sevilla, Zaragoza and Malaga.
 
-<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/spain.png" width="300">
+<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/spain.png" width="400">
 
 The given features were:
 - Timestamps in UTC time
@@ -35,7 +38,7 @@ The phase of feature engineering included adding and transforming features in se
   - This included hour, day of the week/month/year, quarter, business hours, weekend, holidays
 - Transforming cloud coverage feature to binary 
   - (Most of the samples were of value 0 or 1 already, as can be seen in the image below) 
-  - <img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/binary-cloud-coverage.png" width="400">
+  - <img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/binary-cloud-coverage.png" width="500">
 - Min-Max-Scaling the weather features accross the 6 cities
 - Weighting the weather features by the population size of the respective cities to reflect the impact on energy consumption
   - (i.e. one can expect Madrid to have vastly more influence on energy demand than Malaga, since it has 10x the population)
@@ -44,15 +47,15 @@ After feature engineering, our dataset included 48 features.
 
 ## Model and Feature Selection
 The next step was to select a model and a subset of features. 
-We tried different machine learning approaches including *Linear Regression*, *Convolutional neural nets*, *LSTMs*, *Random Forest* and *XGBoost* and ended up choosing XGBoost based on initial performance on the complete dataset. 
+We tried different machine learning approaches including *Linear Regression*, *Convolutional neural nets*, *LSTMs*, *Random Forest* and *XGBoost* and ended up choosing **XGBoost** based on initial performance on the complete dataset. 
 
 XGBoosts built-in `feature_importance` function gave insights on the vastly different influences of features on the predicitions. 
 
-<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/feature-importance.png" width="400">
+<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/feature-importance.png" width="500">
 
 Therefore we chose to do feature selection to prevent overfitting and reduce training time. This was done using *Forward Stepwise Selection*. 
 
-<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/feature-selection.png" width="400">
+<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/feature-selection.png" width="500">
 
 The best validation accuracy was achieved with 25 features. However, the main increase in accuracy already happened by including the 6 most important features, as can be seen in the graph. To prevent overfitting we therefore chose the 6 most important features for our final model:
 ```python
@@ -92,13 +95,6 @@ During Validation, we achieved following results:
 | R²            | 0.97      | 
 
 Following plot also shows an example of predictions on the training data:
-<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/prediction.png" width="500">
+<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/prediction.png" width="700">
 
-On the testing data, the model achieved a MAE of 725.45.
-
-## The Team
-- Osvald Frisk
-- Mikołaj Plotecki
-- Hans-Hendrik Karro
-- Friedrich Dörmann
-
+Finally, the model achieved a MAE of 725.45 on the test set.
