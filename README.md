@@ -44,18 +44,18 @@ After feature engineering, our dataset included 48 features.
 
 ## Model and Feature Selection
 The next step was to select a model and a subset of features. 
-We tried different machine learning approaches including Convolutional neural nets, LSTMs, Random Forest and XGBoost and ended up choosing XGBoost based on initial performance on the complete dataset. 
+We tried different machine learning approaches including *Linear Regression*, *Convolutional neural nets*, *LSTMs*, *Random Forest* and *XGBoost* and ended up choosing XGBoost based on initial performance on the complete dataset. 
 
 XGBoosts built-in `feature_importance` function gave insights on the vastly different influences of features on the predicitions. 
 
 <img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/feature-importance.png" width="400">
 
-Therefore we chose to do feature selection to prevent overfitting and reduce training time. This was done using `Forward Stepwise Selection`. 
+Therefore we chose to do feature selection to prevent overfitting and reduce training time. This was done using *Forward Stepwise Selection*. 
 
 <img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/feature-selection.png" width="400">
 
 The best validation accuracy was achieved with 25 features. However, the main increase in accuracy already happened by including the 6 most important features, as can be seen in the graph. To prevent overfitting we therefore chose the 6 most important features for our final model:
-```
+```python
 features = [
     "hour",
     "dayofweek",
@@ -66,13 +66,35 @@ features = [
 ]
 ```
 
-
 ## Model Training and Hyperparameter Tuning
+We then went on to tune the models hyperparameters using Randomized Search and Time-Series Cross Validation. This included search for `max_depth`, `learning-rate`, `min_child_weight` and `gamma` to further improve the models ability to generalize on the data.
+The final hyperparameters were:
+```python 
+n_estimators = 389
+params = {
+    'learning_rate': 0.0562,
+    'max_depth': 7,
+    'min_child_weight': 1,
+    'gamma': 0.5,
+    'objective': 'reg:squarederror'
+}
+```
+Finally the model was trained on the complete training set and the predicitions for the testset were generated.
 
 ## Final Results
+During Validation, we achieved following results:
+
+| Metric        | Results       | 
+| :------------ | :------------ | 
+| MSE           |  683543 | 
+| MAE           | 644.21 |  
+| MAPE          | 2.24 %      | 
+| R²            | 0.97      | 
+
+Following plot also shows an example of predictions on the training data:
 <img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/prediction.png" width="500">
 
-
+On the testing data, the model achieved a MAE of 725.45.
 
 ## The Team
 - Osvald Frisk
