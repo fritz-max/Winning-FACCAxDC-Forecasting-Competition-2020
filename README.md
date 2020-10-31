@@ -15,7 +15,7 @@ This repo contains the code used by our team to win the Energy forecasting compe
 ## The Case
 The challenge was about forecasting hourly Energy Consumption in Spain based on a dataset containing weather data for 6 largest cities in spain: Madrid, Barcelona, Valencia, Sevilla, Zaragoza and Malaga.
 
-<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/spain.png" width="400">
+<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/spain.png" width="450">
 
 The given features were:
 - Timestamps in UTC time
@@ -38,7 +38,7 @@ The phase of feature engineering included adding and transforming features in se
   - This included hour, day of the week/month/year, quarter, business hours, weekend, holidays
 - Transforming cloud coverage feature to binary 
   - (Most of the samples were of value 0 or 1 already, as can be seen in the image below) 
-  - <img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/binary-cloud-coverage.png" width="500">
+  - <img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/binary-cloud-coverage.png" width="550">
 - Min-Max-Scaling the weather features accross the 6 cities
 - Weighting the weather features by the population size of the respective cities to reflect the impact on energy consumption
   - (i.e. one can expect Madrid to have vastly more influence on energy demand than Malaga, since it has 10x the population)
@@ -51,7 +51,7 @@ We tried different machine learning approaches including *Linear Regression*, *C
 
 XGBoosts built-in `feature_importance` function gave insights on the vastly different influences of features on the predicitions. 
 
-<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/feature-importance.png" width="500">
+<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/feature-importance.png" width="550">
 
 Therefore we chose to do feature selection to prevent overfitting and reduce training time. This was done using *Forward Stepwise Selection*. 
 
@@ -95,6 +95,6 @@ During Validation, we achieved following results:
 | R²            | 0.97      | 
 
 Following plot also shows an example of predictions on the training data:
-<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/prediction.png" width="700">
+<img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/prediction.png">
 
 Finally, the model achieved a MAE of 725.45 on the test set.
