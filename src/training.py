@@ -1,12 +1,10 @@
 from numpy.core.numeric import load
 from preprocessing import load_data
-from feature_engineering import *
 from xgboost import XGBRegressor
 import pandas as pd
 
-
+# load preprocessed data
 (X_train, y_train) = load_data(train=True)
-
 
 # setting up regressor model with hyper parameters
 params = {

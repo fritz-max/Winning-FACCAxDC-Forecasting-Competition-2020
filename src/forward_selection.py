@@ -1,5 +1,4 @@
 from preprocessing import load_data
-from feature_engineering import *
 from sklearn.metrics import mean_squared_error
 import pandas as pd
 import xgboost as xgb
@@ -8,6 +7,7 @@ import numpy as np
 import time
 import itertools
 
+# load preprocessed data
 (X, y) = load_data(train=True, selected_features=False)
 
 split_frac = 0.9
