@@ -1,7 +1,0 @@
-num: 4, 
-Best MSE: 1175651.9674445197, 
-included:
-hour
-dayofweek
-dayofyear
-Madrid_t2m

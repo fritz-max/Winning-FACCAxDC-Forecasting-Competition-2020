@@ -68,10 +68,11 @@ y_trainset = y_train[:int(X_train.shape[0]*split_frac)]
 y_valset = y_train[int(X_train.shape[0]*split_frac):]
 
 # pred5 FINAL
+
+
 n_estimators = 389
 params = {
-    # Parameters that we are going to tune.
-    'learning_rate': 0.056215192748164444,
+    'learning_rate': 0.0562,
     'max_depth': 7,
     'min_child_weight': 1,
     'gamma': 0.5,
@@ -124,4 +125,4 @@ fit = xgb_model.fit(
     X_train,
     y_train)
 
-fit.save_model('new6.model')
+fit.save_model('models/xgb_handin.model')

@@ -15,7 +15,7 @@ add_holidays_spain(X_test)
 add_city_weight(X_test)
 normalize(X_test)
 
-cols2incl = [
+features = [
     "hour",
     "dayofweek",
     "dayofyear",
@@ -27,7 +27,7 @@ cols2incl = [
 X_test = X_test[cols2incl]
 
 xgb_model = XGBRegressor(n_jobs=8)
-xgb_model.load_model("new5.model")
+xgb_model.load_model("models/xgb_handin.model")
 
 test_preds = xgb_model.predict(X_test)
 
