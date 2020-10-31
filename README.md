@@ -11,7 +11,7 @@ More information:
 - Linkedin Post: ?
 
 ## The Case
-The challenge was about forecasting hourly Energy Consumption in Spain based on a dataset containing weather data for 6 largest cities in spain. 
+The challenge was about forecasting hourly Energy Consumption in Spain based on a dataset containing weather data for 6 largest cities in spain: Madrid, Barcelona, Valencia, Sevilla, Zaragoza and Malaga.
 
 <img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/spain.png" width="300">
 
@@ -25,14 +25,28 @@ The given features were:
   - tcc: total cloud coverage 
   - tp: total precipitation
   
+Therefore, the dataset consisted of 37 individual features (Time + 6x6 Weather Feature per City).
 Training Data was provided for 2015-2018 and the results were evaluated on the data from 2019.
 
 ## Data Exploration and Feature Engineering
+We started out with data exploration. The Dataset was provided in an already clean and formatted way. As can be expected, we identified strong seasonality in the data (hourly, weekly, monthly, etc.). 
+
+The phase of feature engineering included adding and transforming features in several ways, e.g.:
+- Engineering time-related features from the time stamp (hour, day of the week/month/year, quarter, weekend, holidays, etc.)
+- Transforming cloud coverage feature to binary
+- Normalizing the data between 0 and 1.
+- Weighting the weather features with the population size of the cities to reflect the impact on energy consumption (i.e. one can expect Madrid to have vastly more influence on energy demand than Malaga, since it has 10x the population)
+- 
+
+
+
 <img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/binary-cloud-coverage.png" width="400">
+
 <img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/feature-importance.png" width="400">
 
-
 ## Model and Feature Selection
+
+
 
 <img src="https://github.com/fritz-max/energy-forecasting/blob/master/images/feature-selection.png" width="400">
 
