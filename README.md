@@ -7,10 +7,10 @@ This repo contains the code used by our team to win the Energy forecasting compe
 15 teams of students from Aarhus University participated in the competition that ran from 27th to 29th of October 2020. 
 
 **The Team consisted of:**
-- [Osvald Frisk] (https://github.com/OsvaldFrisk)
-- [Mikołaj Plotecki] (https://github.com/GitHubUser97)
-- [Hans-Hendrik Karro] (https://github.com/hanshendrikkarro)
-- [Friedrich Dörmann] (https://github.com/fritz-max) 
+- [Osvald Frisk](https://github.com/OsvaldFrisk)
+- [Mikołaj Plotecki](https://github.com/GitHubUser97)
+- [Hans-Hendrik Karro](https://github.com/hanshendrikkarro)
+- [Friedrich Dörmann](https://github.com/fritz-max) 
 
 ## The Case
 The challenge was about forecasting hourly Energy Consumption in Spain based on a dataset containing weather data for 6 largest cities in spain: Madrid, Barcelona, Valencia, Sevilla, Zaragoza and Malaga.
@@ -73,13 +73,13 @@ features = [
 We then went on to tune the models hyperparameters using Randomized Search and Time-Series Cross Validation. This included search for `max_depth`, `learning-rate`, `min_child_weight` and `gamma` to further improve the models ability to generalize on the data.
 The final hyperparameters were:
 ```python 
-n_estimators = 389
 params = {
     'learning_rate': 0.0562,
     'max_depth': 7,
     'min_child_weight': 1,
     'gamma': 0.5,
-    'objective': 'reg:squarederror'
+    'objective': 'reg:squarederror',
+    'n_estimators': 389
 }
 ```
 Finally the model was trained on the complete training set and the predicitions for the testset were generated.
